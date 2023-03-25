@@ -5,6 +5,8 @@ let listCard = document.querySelector('.listCard');
 let body = document.querySelector('body');
 let total = document.querySelector('.total');
 let quantity = document.querySelector('.quantity');
+let clearCartBtn = document.querySelector('.clear-cart');
+
 
 openShopping.addEventListener('click', ()=>{
     body.classList.add('active');
@@ -16,37 +18,37 @@ closeShopping.addEventListener('click', ()=>{
 let products = [
     {
         id: 1,
-        name: 'Food 1',
+        name: 'PRODUCT NAME 1',
         image: '1.PNG',
-        price: 290 
+        price: 120
     },
     {
         id: 2,
-        name: 'Food 2',
+        name: 'PRODUCT NAME 2',
         image: '2.PNG',
-        price: 200
+        price: 120
     },
     {
         id: 3,
-        name: 'Food 3',
+        name: 'PRODUCT NAME 3',
         image: '3.PNG',
         price: 220
     },
     {
         id: 4,
-        name: 'Food 4',
+        name: 'PRODUCT NAME 4',
         image: '4.PNG',
         price: 123
     },
     {
         id: 5,
-        name: 'Food 5',
+        name: 'PRODUCT NAME 5',
         image: '5.PNG',
         price: 320
     },
     {
         id: 6,
-        name: 'Food 6',
+        name: 'PRODUCT NAME 6',
         image: '6.PNG',
         price: 120
     }
@@ -66,9 +68,14 @@ function initApp(){
 }
 initApp();
 function addToCard(key){
-    if(listCards[key] == null){
-        listCards[key] = products[key];
-        listCards[key].quantity = 1;
+    let existingProduct = listCards.find((product) => product.id === products[key].id);
+    if(existingProduct){
+        existingProduct.quantity += 1;
+    } else {
+        listCards.push({
+            ...products[key],
+            quantity: 1
+        });
     }
     reloadCard();
 }
@@ -77,14 +84,14 @@ function reloadCard(){
     let count = 0;
     let totalPrice = 0;
     listCards.forEach((value, key)=>{
-        totalPrice = totalPrice + value.price;
+        totalPrice = totalPrice + (value.price * value.quantity);
         count = count + value.quantity;
         if(value != null){
             let newDiv = document.createElement('li');
             newDiv.innerHTML = `
                 <div><img src="image/${value.image}"/></div>
                 <div>${value.name}</div>
-                <div>${value.price.toLocaleString()}</div>
+                <div>${(value.price * value.quantity).toLocaleString()}</div>
                 <div>
                     <button onclick="changeQuantity(${key}, ${value.quantity - 1})">-</button>
                     <div class="count">${value.quantity}</div>
@@ -97,12 +104,10 @@ function reloadCard(){
     quantity.innerText = count;
 }
 function changeQuantity(key, quantity){
-    console.log(key, quantity);
     if(quantity == 0){
-        delete listCards[key];
-    }else{
+        listCards.splice(key, 1);
+    } else {
         listCards[key].quantity = quantity;
-        listCards[key].price = quantity * products[key].price;
     }
     reloadCard();
 }
